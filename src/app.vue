@@ -1,6 +1,7 @@
 <script>
 import TodoList from "@/components/todo-list.vue";
 import AddTodoForm from "@/components/add-todo-form.vue";
+import { getTodos } from "./api/axios-requests";
 
 export default {
   components: {
@@ -9,11 +10,7 @@ export default {
   },
   data() {
     return {
-      todos: [
-        { id: 1, title: "lorem ipsum dolor 1", done: true },
-        { id: 2, title: "lorem ipsum dolor 2", done: false },
-        { id: 3, title: "lorem ipsum dolor 3", done: false },
-      ],
+      todos: [],
     };
   },
   methods: {
@@ -23,12 +20,27 @@ export default {
     createTodo(todo) {
       this.todos.push(todo);
     },
+    async fetchTodos() {
+      const currentTodos = await getTodos();
+      if (currentTodos) this.todos.push(...currentTodos);
+    },
+  },
+  computed: {
+    lessThenHundred() {
+      return this.todos.length < 99;
+    },
+  },
+  mounted() {
+    this.fetchTodos();
   },
 };
 </script>
 
 <template>
-  <AddTodoForm @oncreate="(todo) => createTodo(todo)" />
+  <AddTodoForm v-if="lessThenHundred" @oncreate="(todo) => createTodo(todo)" />
+  <h2 style="margin-bottom: 35px" class="max-span" v-else>
+    Максимальное количество заданий
+  </h2>
   <TodoList :ondelete="deleteTodo" :todos="todos" />
 </template>
 

@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/database": "^0.14.4",
+    "axios": "^1.4.0",
+    "firebase": "^9.22.2",
     "sass": "^1.63.3",
     "vue": "^3.2.47"
   },

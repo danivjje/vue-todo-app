@@ -1,4 +1,6 @@
 <script>
+import { postTodo } from "../api/axios-requests";
+
 export default {
   data() {
     return {
@@ -6,12 +8,19 @@ export default {
     };
   },
   methods: {
-    createPost() {
-      this.$emit("oncreate", {
-        id: Date().now,
-        title: this.title,
-        done: false,
-      });
+    async createPost() {
+      if (this.title) {
+        try {
+          const todo = { title: this.title, done: false };
+
+          await postTodo(todo);
+          this.$emit("oncreate", todo);
+
+          this.title = "";
+        } catch (error) {
+          console.log("post error: ", error);
+        }
+      }
     },
   },
 };
@@ -23,7 +32,7 @@ export default {
       v-model="title"
       class="input"
       type="text"
-      placeholder="enter the name of task"
+      placeholder="enter the name of the task"
     />
     <button @click="createPost" class="submit-button">create</button>
   </form>
@@ -36,19 +45,29 @@ export default {
   display: flex
 
 .input
+  font-size: 15px
   border: none
   width: 100%
-  padding: 10px 15px
-  border-radius: 15px
+  padding: 15px 25px
+  border-radius: 25px
   margin-right: 10px
-  background-color: lighten(gray, 42)
+  background-color: #FBC0F3
   &:focus
     outline: none
 
 .submit-button
+  font-size: 16px
   border: none
-  border-radius: 15px
+  border-radius: 25px
   cursor: pointer
-  padding: 0 15px
-  background-color: lighten(gray, 42)
+  padding: 0 25px
+  background-color: #FBC0F3
+
+@media (screen and max-width: 768px)
+  .form
+    width: 100%
+  .input
+    font-size: 14px
+  .submit-button
+    font-size: 14px
 </style>

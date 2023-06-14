@@ -34,4 +34,8 @@ export default {
     display: flex
     flex-direction: column
     width: 60%
+
+@media (screen and max-width: 768px)
+    .list
+        width: 100%
 </style>
