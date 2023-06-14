@@ -1,5 +1,5 @@
 <script>
-import { deleteTodo } from "../api/axios-requests";
+import { deleteTodo, updateAsDone } from "@/api/axios-requests";
 
 export default {
   props: {
@@ -14,9 +14,14 @@ export default {
     },
   },
   methods: {
-    markAsDone() {
-      if (event.target !== this.$refs.deleteButton) {
-        this.todo.done = !this.todo.done;
+    async markAsDone() {
+      if (event.target != this.$refs.deleteButton) {
+        try {
+          await updateAsDone(this.todo);
+          this.todo.done = !this.todo.done;
+        } catch (error) {
+          console.log("patch error: ", error);
+        }
       }
     },
     async deleteItem() {
@@ -32,20 +37,31 @@ export default {
 </script>
 
 <template>
-  <li :class="'item ' + renderDoneClass" @click="markAsDone">
-    <span class="name">{{ todo.title }}</span>
+  <li class="list-item">
     <button
-      ref="deleteButton"
-      @click="deleteItem"
-      class="delete-button"
+      @click="$router.push(`todo/${todo.id}`)"
+      class="bi bi-info-circle-fill more-button"
     ></button>
+    <div :class="'item ' + renderDoneClass" @click="markAsDone">
+      <span class="name">{{ todo.title }}</span>
+      <button
+        ref="deleteButton"
+        @click="deleteItem"
+        class="delete-button"
+      ></button>
+    </div>
   </li>
 </template>
 
 <style lang="sass" scoped>
+.list-item
+  display: flex
+  align-items: center
+  &:not(:last-child)
+    margin-bottom: 15px
+
 .item
     cursor: pointer
-    font-size: 17px
     width: 100%
     padding: 10px 15px
     border-radius: 21px
@@ -53,14 +69,12 @@ export default {
     display: flex
     align-items: center
     justify-content: space-between
-    &:not(:last-child)
-        margin-bottom: 15px
 
 .success
     text-decoration: line-through
 
 .name
-    max-width: 98%
+    max-width: 95%
     word-wrap: break-word
 
 .delete-button
@@ -74,4 +88,14 @@ export default {
     background-repeat: no-repeat
     background-image: url('/delete-icon.png')
     border: none
+
+.more-button
+  cursor: pointer
+  display: block
+  width: 28px
+  height: 28px
+  border: none
+  background: transparent
+  font-size: 26px
+  margin-right: 15px
 </style>

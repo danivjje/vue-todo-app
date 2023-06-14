@@ -1,5 +1,5 @@
 <script>
-import { postTodo } from "../api/axios-requests";
+import { postTodo } from "@/api/axios-requests";
 
 export default {
   data() {
@@ -48,7 +48,7 @@ export default {
   font-size: 15px
   border: none
   width: 100%
-  padding: 15px 25px
+  padding: 12px 25px
   border-radius: 25px
   margin-right: 10px
   background-color: #FBC0F3
