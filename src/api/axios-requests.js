@@ -12,13 +12,14 @@ export const getTodo = async (id) => {
 }
 
 export const postTodo = async (todo) => {
-    axios.post(ref, todo);
+    return await axios.post(ref, todo);
 }
 
-export const deleteTodo = async (todo) => {
-    axios.delete(`${ref}/${todo.id}`)
+export const deleteTodo = async (id) => {
+    axios.delete(`${ref}/${id}`)
 }
 
 export const updateAsDone = async (todo) => {
+    console.log('put was called');
     axios.put(`${ref}/${todo.id}`, { done: !todo.done });
 }

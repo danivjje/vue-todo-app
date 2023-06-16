@@ -1,29 +1,29 @@
-<script>
+<script setup>
+import { ref } from "vue";
 import { postTodo } from "@/api/axios-requests";
+import { useTodosStore } from "@/store/use-todos-store";
 
-export default {
-  data() {
-    return {
-      title: "",
-    };
-  },
-  methods: {
-    async createPost() {
-      if (this.title) {
-        try {
-          const todo = { title: this.title, done: false };
+const title = ref("");
+const todosStore = useTodosStore();
 
-          await postTodo(todo);
-          this.$emit("oncreate", todo);
-
-          this.title = "";
-        } catch (error) {
-          console.log("post error: ", error);
-        }
-      }
-    },
-  },
+const createTodo = (todo) => {
+  todosStore.todos.push(todo);
 };
+
+async function createPost() {
+  if (title.value) {
+    try {
+      const todo = { title: title.value, done: false };
+
+      await postTodo(todo).then((item) =>
+        createTodo(Object.assign(todo, { id: item.data.id }))
+      );
+      title.value = "";
+    } catch (error) {
+      console.log("POST ERROR: ", error);
+    }
+  }
+}
 </script>
 
 <template>

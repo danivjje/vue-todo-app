@@ -1,52 +1,41 @@
-<script>
-import { deleteTodo, updateAsDone } from "@/api/axios-requests";
+<script setup>
+import { updateAsDone } from "@/api/axios-requests";
+import { computed } from "@vue/reactivity";
+import { ref } from "vue";
+import { useTodosStore } from "@/store/use-todos-store";
+import { useRouter } from "vue-router";
 
-export default {
-  props: {
-    todo: {
-      type: Object,
-      required: true,
-    },
-  },
-  computed: {
-    renderDoneClass() {
-      return this.todo.done ? "success" : "";
-    },
-  },
-  methods: {
-    async markAsDone() {
-      if (event.target != this.$refs.deleteButton) {
-        try {
-          await updateAsDone(this.todo);
-          this.todo.done = !this.todo.done;
-        } catch (error) {
-          console.log("patch error: ", error);
-        }
-      }
-    },
-    async deleteItem() {
-      try {
-        await deleteTodo(this.todo);
-        this.$emit("ondelete", this.todo);
-      } catch (error) {
-        console.log("remove error: ", error);
-      }
-    },
-  },
-};
+const { todo } = defineProps({
+  todo: Object,
+});
+const router = useRouter();
+const todosStore = useTodosStore();
+const deleteButtonRef = ref(null);
+const renderDoneClass = computed(() => (todo.done ? "success" : ""));
+
+async function markAsDone() {
+  if (true) {
+    try {
+      await updateAsDone(todo);
+      todo.done = !todo.done;
+    } catch (error) {
+      console.log("patch error: ", error);
+    }
+  }
+}
 </script>
 
 <template>
   <li class="list-item">
     <button
-      @click="$router.push(`todo/${todo.id}`)"
+      @click="router.push(`todo/${todo.id}`)"
       class="bi bi-info-circle-fill more-button"
     ></button>
-    <div :class="'item ' + renderDoneClass" @click="markAsDone">
+    <div :class="'item ' + renderDoneClass">
       <span class="name">{{ todo.title }}</span>
       <button
-        ref="deleteButton"
-        @click="deleteItem"
+        ref="deleteButtonRef"
+        @click="todosStore.deleteItem(todo.id)"
         class="delete-button"
       ></button>
     </div>

@@ -1,31 +1,17 @@
-<script>
-import TodoItem from "./todo-item.vue";
+<script setup>
+import TodoItem from "@/components/todo-item.vue";
 
-export default {
-  components: {
-    TodoItem,
+const { todos, ondelete } = defineProps({
+  todos: {
+    type: Array,
+    required: true,
   },
-  props: {
-    todos: {
-      type: Array,
-      required: true,
-    },
-    ondelete: {
-      type: Function,
-      required: true,
-    },
-  },
-};
+});
 </script>
 
 <template>
   <ul class="list">
-    <TodoItem
-      v-for="todo in todos"
-      @ondelete="(todo) => ondelete(todo)"
-      :key="todo.id"
-      :todo="todo"
-    />
+    <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo" />
   </ul>
 </template>
 

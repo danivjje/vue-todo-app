@@ -1,6 +1,4 @@
-<script>
-export default {};
-</script>
+<script setup></script>
 
 <template>
   <router-view></router-view>

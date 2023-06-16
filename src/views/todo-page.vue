@@ -1,23 +1,27 @@
-<script>
-import { getTodo, updateAsDone, deleteTodo } from "@/api/axios-requests";
+<script setup>
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useTodosStore } from "@/store/use-todos-store";
+import { getTodo, deleteTodo } from "@/api/axios-requests";
 
-export default {
-  data() {
-    return {
-      id: this.$route.params.id,
-      todo: {},
-    };
-  },
-  methods: {
-    async fetchTodo() {
-      const todo = await getTodo(this.id);
-      return todo;
-    },
-  },
-  async mounted() {
-    this.todo = await this.fetchTodo();
-  },
-};
+const route = useRoute();
+const router = useRouter();
+const todosStore = useTodosStore();
+const todoId = route.params.id;
+const todo = ref({});
+
+async function fetchTodo() {
+  const todo = await getTodo(todoId);
+  return todo;
+}
+
+const handleDelete = () =>
+  todosStore.deleteItem(todoId).then(() => router.push("/todos"));
+
+onMounted(async () => {
+  const currentTodo = await fetchTodo();
+  todo.value = currentTodo;
+});
 </script>
 
 <template>
@@ -27,7 +31,7 @@ export default {
     </router-link>
     <h2 class="title">{{ todo.title }}</h2>
     <button>mark as done</button>
-    <button @click="deleteTodo(todo)">delete</button>
+    <button @click="handleDelete">delete</button>
   </div>
 </template>
 
