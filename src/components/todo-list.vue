@@ -11,7 +11,7 @@ const { todos, ondelete } = defineProps({
 
 <template>
   <ul class="list">
-    <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo" />
+    <todo-item v-for="todo in todos" :key="todo.id" :todo="todo" />
   </ul>
 </template>
 

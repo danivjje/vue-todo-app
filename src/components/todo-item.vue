@@ -1,28 +1,17 @@
 <script setup>
-import { updateAsDone } from "@/api/axios-requests";
 import { computed } from "@vue/reactivity";
-import { ref } from "vue";
 import { useTodosStore } from "@/store/use-todos-store";
 import { useRouter } from "vue-router";
 
 const { todo } = defineProps({
-  todo: Object,
+  todo: {
+    type: Object,
+    required: true,
+  },
 });
 const router = useRouter();
 const todosStore = useTodosStore();
-const deleteButtonRef = ref(null);
 const renderDoneClass = computed(() => (todo.done ? "success" : ""));
-
-async function markAsDone() {
-  if (true) {
-    try {
-      await updateAsDone(todo);
-      todo.done = !todo.done;
-    } catch (error) {
-      console.log("patch error: ", error);
-    }
-  }
-}
 </script>
 
 <template>
@@ -34,7 +23,6 @@ async function markAsDone() {
     <div :class="'item ' + renderDoneClass">
       <span class="name">{{ todo.title }}</span>
       <button
-        ref="deleteButtonRef"
         @click="todosStore.deleteItem(todo.id)"
         class="delete-button"
       ></button>

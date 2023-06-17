@@ -2,24 +2,26 @@
 import AddTodoForm from "@/components/add-todo-form.vue";
 import TodoList from "@/components/todo-list.vue";
 import { useTodosStore } from "@/store/use-todos-store";
-import { onMounted } from "vue";
+import { onBeforeMount } from "vue";
 import { computed } from "@vue/reactivity";
 
 const todosStore = useTodosStore();
 const lessThenHundred = computed(() => todosStore.todos.length < 99);
+const zeroTasks = computed(() => todosStore.todos.length <= 0);
 
-onMounted(() => {
-  todosStore.fetchTodos();
+onBeforeMount(async () => {
+  if (!todosStore.todos.length) todosStore.fetchTodos();
 });
 </script>
 
 <template>
   <div class="page">
-    <AddTodoForm v-if="lessThenHundred" />
-    <h2 style="margin-bottom: 35px" class="max-span" v-else>
+    <add-todo-form v-if="lessThenHundred" />
+    <h2 v-else style="margin-bottom: 35px" class="max-span">
       Максимальное количество заданий
     </h2>
-    <TodoList :todos="todosStore.todos" />
+    <span v-if="zeroTasks">add any task</span>
+    <todo-list v-else :todos="todosStore.todos" />
   </div>
 </template>
 

@@ -6,17 +6,17 @@ import { useTodosStore } from "@/store/use-todos-store";
 const title = ref("");
 const todosStore = useTodosStore();
 
-const createTodo = (todo) => {
-  todosStore.todos.push(todo);
-};
-
 async function createPost() {
   if (title.value) {
     try {
-      const todo = { title: title.value, done: false };
+      const todo = {
+        title: title.value,
+        done: false,
+        date: Date.now().toString(),
+      };
 
       await postTodo(todo).then((item) =>
-        createTodo(Object.assign(todo, { id: item.data.id }))
+        todosStore.todos.push(Object.assign(todo, { id: item.data.id }))
       );
       title.value = "";
     } catch (error) {
