@@ -58,7 +58,7 @@ onBeforeMount(async () => {
       <button class="back-button bi bi-arrow-return-left"></button>
     </router-link>
 
-    <div v-if="!notFound">
+    <div class="found-wrapper" v-if="!notFound">
       <deleted-task @onrestore="handleRestore" v-if="isDelete" :todo="todo" />
       <div v-else class="info-wrapper">
         <h2 :class="'title ' + renderDoneClass">{{ todo.title }}</h2>
@@ -70,7 +70,7 @@ onBeforeMount(async () => {
             delete
           </button>
         </div>
-        <span
+        <span class="date-span"
           ><b>Date of create:</b>
           {{ new Date(parseInt(todo.date)).toString() }}</span
         >
@@ -87,8 +87,9 @@ onBeforeMount(async () => {
   align-items: center
 
 .title
-    font-size: 20px
-    margin-bottom: 15px
+  text-align: center
+  font-size: 20px
+  margin-bottom: 15px
 
 .success
   text-decoration: line-through
@@ -105,6 +106,9 @@ onBeforeMount(async () => {
   &:not(:last-child)
     margin-right: 15px
 
+.date-span
+  text-align: center
+
 .back-button
   width: 44px
   height: 44px
@@ -116,4 +120,8 @@ onBeforeMount(async () => {
   background: transparent
   &::before
     font-size: 38px
+
+@media screen and (max-width: 576px)
+  .found-wrapper
+    margin-top: 55px
 </style>
