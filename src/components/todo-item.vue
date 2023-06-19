@@ -1,6 +1,7 @@
 <script setup>
-import { computed } from "@vue/reactivity";
 import { useTodosStore } from "@/store/use-todos-store";
+import { useLoadingStore } from "@/store/use-loading-store";
+import { computed } from "@vue/reactivity";
 import { useRouter } from "vue-router";
 
 const { todo } = defineProps({
@@ -11,21 +12,30 @@ const { todo } = defineProps({
 });
 const router = useRouter();
 const todosStore = useTodosStore();
+const loadingStore = useLoadingStore();
 const renderDoneClass = computed(() => (todo.done ? "success" : ""));
+
+const handleComplete = () => {
+  todo.done = !todo.done;
+  todosStore.markAsDone(todo);
+};
+
+const handleDelete = async () => {
+  loadingStore.startLoading();
+  await todosStore.deleteItem(todo.id);
+  loadingStore.finishLoading();
+};
 </script>
 
 <template>
-  <li class="list-item">
+  <li @click="handleComplete" class="list-item">
     <button
-      @click="router.push(`todo/${todo.id}`)"
+      @click.stop="router.push(`todo/${todo.id}`)"
       class="bi bi-info-circle-fill more-button"
     ></button>
     <div :class="'item ' + renderDoneClass">
       <span class="name">{{ todo.title }}</span>
-      <button
-        @click="todosStore.deleteItem(todo.id)"
-        class="delete-button"
-      ></button>
+      <button @click.stop="handleDelete" class="delete-button"></button>
     </div>
   </li>
 </template>

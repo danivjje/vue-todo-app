@@ -12,6 +12,10 @@
 </template>
 
 <style lang="sass" scoped>
+.wrapper
+  margin-top: 55px
+
 .title
-    font-size: 18px
+  font-size: 17px
+  text-align: center
 </style>

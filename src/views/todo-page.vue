@@ -1,14 +1,17 @@
 <script setup>
 import DeletedTask from "@/components/deleted-task.vue";
 import TaskNotFound from "@/components/task-not-found.vue";
+import LoadingSpinner from "@/components/loading-spinner.vue";
 import { useTodosStore } from "@/store/use-todos-store";
-import { getTodo, updateAsDone } from "@/api/axios-requests";
+import { useLoadingStore } from "@/store/use-loading-store";
+import { getTodo } from "@/api/axios-requests";
 import { onBeforeMount, ref } from "vue";
 import { useRoute } from "vue-router";
 import { computed } from "@vue/reactivity";
 
 const route = useRoute();
 const todosStore = useTodosStore();
+const loadingStore = useLoadingStore();
 
 const todo = ref({});
 const isDelete = ref(false);
@@ -21,20 +24,14 @@ async function fetchTodo() {
   return todo;
 }
 
-async function markAsDone() {
-  if (true) {
-    try {
-      await updateAsDone(todo.value);
-      todo.done = !todo.done;
-    } catch (error) {
-      console.log("patch error: ", error);
-    }
-  }
-}
-
 const handleDelete = async () => {
   await todosStore.deleteItem(todoId);
   isDelete.value = true;
+};
+
+const handleComplete = () => {
+  todo.value.done = !todo.value.done;
+  todosStore.markAsDone(todo.value);
 };
 
 const handleRestore = () => {
@@ -43,9 +40,10 @@ const handleRestore = () => {
 
 onBeforeMount(async () => {
   try {
+    loadingStore.startLoading();
     const currentTodo = await fetchTodo();
     todo.value = currentTodo;
-    console.log(new Date(parseInt(todo.value?.date)).toString());
+    loadingStore.finishLoading();
   } catch (error) {
     notFound.value = true;
   }
@@ -59,29 +57,32 @@ onBeforeMount(async () => {
     </router-link>
 
     <div class="found-wrapper" v-if="!notFound">
-      <deleted-task @onrestore="handleRestore" v-if="isDelete" :todo="todo" />
-      <div v-else class="info-wrapper">
-        <h2 :class="'title ' + renderDoneClass">{{ todo.title }}</h2>
-        <div class="buttons-wrapper">
-          <button class="button mark-button" @click="markAsDone">
-            mark as done
-          </button>
-          <button class="button delete-button" @click="handleDelete">
-            delete
-          </button>
-        </div>
-        <span class="date-span"
-          ><b>Date of create:</b>
-          {{ new Date(parseInt(todo.date)).toString() }}</span
-        >
-      </div>
+      <loading-spinner v-if="loadingStore.isLoading" />
+      <template v-else>
+        <deleted-task v-if="isDelete" @onrestore="handleRestore" :todo="todo" />
+        <template v-else>
+          <h2 :class="'title ' + renderDoneClass">{{ todo.title }}</h2>
+          <div class="buttons-wrapper">
+            <button class="button mark-button" @click="handleComplete">
+              mark as done
+            </button>
+            <button class="button delete-button" @click="handleDelete">
+              delete
+            </button>
+          </div>
+          <span class="date-span"
+            ><b>Date of create:</b>
+            {{ new Date(parseInt(todo.date)).toString() }}</span
+          >
+        </template>
+      </template>
     </div>
     <task-not-found v-else />
   </div>
 </template>
 
 <style scoped lang="sass">
-.info-wrapper
+.found-wrapper
   display: flex
   flex-direction: column
   align-items: center
@@ -90,11 +91,14 @@ onBeforeMount(async () => {
   text-align: center
   font-size: 20px
   margin-bottom: 15px
+  max-width: 90%
 
 .success
   text-decoration: line-through
 
 .buttons-wrapper
+  display: flex
+  justify-content: center
   margin-bottom: 25px
 
 .button
@@ -107,6 +111,8 @@ onBeforeMount(async () => {
     margin-right: 15px
 
 .date-span
+  display: block
+  width: 100%
   text-align: center
 
 .back-button

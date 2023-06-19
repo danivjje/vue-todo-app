@@ -20,6 +20,5 @@ export const deleteTodo = async (id) => {
 }
 
 export const updateAsDone = async (todo) => {
-    console.log('put was called');
-    axios.put(`${ref}/${todo.id}`, { done: !todo.done });
+    axios.put(`${ref}/${todo.id}`, { done: todo.done });
 }

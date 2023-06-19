@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { deleteTodo, getTodos } from '@/api/axios-requests';
+import { deleteTodo, getTodos, updateAsDone } from '@/api/axios-requests';
 import { ref } from "vue";
 
 export const useTodosStore = defineStore('todos', () => {
@@ -22,5 +22,19 @@ export const useTodosStore = defineStore('todos', () => {
         }
     }
 
-    return { todos, deleteItem, fetchTodos }
+    async function markAsDone(todo) {
+        if (true) {
+            try {
+                await updateAsDone(todo);
+                const foundIndex = todos.value.findIndex(
+                    (item) => item.id === todo.id
+                );
+                todos.value.splice(foundIndex, 1, { ...todo, done: todo.done });
+            } catch (error) {
+                console.log("patch error: ", error);
+            }
+        }
+    }
+
+    return { todos, deleteItem, fetchTodos, markAsDone }
 })

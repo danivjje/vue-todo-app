@@ -2,9 +2,11 @@
 import { ref } from "vue";
 import { postTodo } from "@/api/axios-requests";
 import { useTodosStore } from "@/store/use-todos-store";
+import { useLoadingStore } from "@/store/use-loading-store";
 
 const title = ref("");
 const todosStore = useTodosStore();
+const loadingStore = useLoadingStore();
 
 async function createPost() {
   if (title.value) {
@@ -15,9 +17,12 @@ async function createPost() {
         date: Date.now().toString(),
       };
 
+      loadingStore.startLoading();
       await postTodo(todo).then((item) =>
         todosStore.todos.push(Object.assign(todo, { id: item.data.id }))
       );
+      loadingStore.finishLoading();
+
       title.value = "";
     } catch (error) {
       console.log("POST ERROR: ", error);
